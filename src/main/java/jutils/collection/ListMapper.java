@@ -40,7 +40,7 @@ public class ListMapper<F, T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new ConverterIter<>(wrapped.iterator(), mapper);
+        return IteratorMapper.map(wrapped.iterator(), mapper);
     }
 
     @Override
@@ -147,12 +147,12 @@ public class ListMapper<F, T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator() {
-        return new ConverterListIter<>(wrapped.listIterator(), mapper);
+        return ListIteratorMapper.map(wrapped.listIterator(), mapper);
     }
 
     @Override
     public ListIterator<T> listIterator(int index) {
-        return new ConverterListIter<>(wrapped.listIterator(index), mapper);
+        return ListIteratorMapper.map(wrapped.listIterator(index), mapper);
     }
 
     @Override
@@ -180,46 +180,17 @@ public class ListMapper<F, T> implements List<T> {
         return builder.toString();
     }
 
-    private final static class ConverterIter<F, T> implements Iterator<T> {
+    public final static class ListIteratorMapper<F, T> implements ListIterator<T> {
 
-        private final Iterator<F> wrapped;
-        private final Mapper<F, T> mapper;
-
-        private ConverterIter(Iterator<F> wrapped, Mapper<F, T> mapper) {
-            this.wrapped = wrapped;
-            this.mapper = mapper;
+        public static <F, T> ListIteratorMapper<F, T> map(ListIterator<F> iterator, Mapper<F, T> mapper) {
+            return new ListIteratorMapper<>(iterator, mapper);
         }
 
-        @Override
-        public boolean hasNext() {
-            return wrapped.hasNext();
-        }
-
-        @Override
-        public T next() {
-            return mapper.map(wrapped.next());
-        }
-
-        @Override
-        public void remove() {
-            wrapped.remove();
-        }
-
-        @Override
-        public void forEachRemaining(Consumer<? super T> action) {
-            while (hasNext()) {
-                action.accept(next());
-            }
-        }
-
-    }
-
-    private final static class ConverterListIter<F, T> implements ListIterator<T> {
 
         private final ListIterator<F> wrapped;
         private final Mapper<F, T> mapper;
 
-        private ConverterListIter(ListIterator<F> wrapped, Mapper<F, T> mapper) {
+        private ListIteratorMapper(ListIterator<F> wrapped, Mapper<F, T> mapper) {
             this.wrapped = wrapped;
             this.mapper = mapper;
         }
