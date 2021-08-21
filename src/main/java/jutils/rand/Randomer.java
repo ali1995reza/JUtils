@@ -3,12 +3,17 @@ package jutils.rand;
 import jutils.assertion.Assertion;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Randomer<T> {
+
+    public static <T> Randomer<T> of(T ... objects) {
+        return new Randomer<T>(objects);
+    }
+
+    public static <T> Randomer<T> of(Collection<T> objects) {
+        return new Randomer<T>(objects);
+    }
 
     private static class RandomObjectHolder<T> {
         private final T object;
@@ -31,7 +36,7 @@ public class Randomer<T> {
     private final Random random = new SecureRandom();
     private final List<RandomObjectHolder<T>> objects;
 
-    public Randomer(List<T> objects) {
+    public Randomer(Collection<T> objects) {
         this.objects = new ArrayList<>();
         for(T object : objects) {
             this.objects.add(new RandomObjectHolder<>(object));
