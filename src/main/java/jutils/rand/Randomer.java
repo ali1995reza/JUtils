@@ -7,12 +7,14 @@ import java.util.*;
 
 public class Randomer<T> {
 
+    private final static Random RANDOM = new SecureRandom();
+
     public static <T> Randomer<T> of(T ... objects) {
-        return new Randomer<T>(objects);
+        return new Randomer<>(objects);
     }
 
     public static <T> Randomer<T> of(Collection<T> objects) {
-        return new Randomer<T>(objects);
+        return new Randomer<>(objects);
     }
 
     private static class RandomObjectHolder<T> {
@@ -33,21 +35,34 @@ public class Randomer<T> {
 
     }
 
-    private final Random random = new SecureRandom();
+    private final Random random;
     private final List<RandomObjectHolder<T>> objects;
 
-    public Randomer(Collection<T> objects) {
+    public Randomer(Random random, Collection<T> objects) {
+        Assertion.ifNull("random is null", random);
+        this.random = random;
         this.objects = new ArrayList<>();
         for(T object : objects) {
             this.objects.add(new RandomObjectHolder<>(object));
         }
     }
 
-    public Randomer(T ... objects) {
+    public Randomer(Collection<T> objects) {
+        this(RANDOM, objects);
+    }
+
+
+    public Randomer(Random random, T ... objects) {
+        Assertion.ifNull("random is null", random);
+        this.random = random;
         this.objects = new ArrayList<>();
         for(T object:objects) {
             this.objects.add(new RandomObjectHolder<>(object));
         }
+    }
+
+    public Randomer(T ... objects) {
+        this(RANDOM, objects);
     }
 
     public int remainingObjects() {
